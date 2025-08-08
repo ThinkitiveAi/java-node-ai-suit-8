@@ -14,7 +14,8 @@ import {
   Zoom,
   Box,
   Typography,
-  Button
+  Button,
+  Divider
 } from '@mui/material';
 import { 
   LocalHospital, 
@@ -24,10 +25,11 @@ import {
   Lock,
   Phone,
   ErrorOutline,
-  CheckCircleOutline
+  CheckCircleOutline,
+  Person
 } from '@mui/icons-material';
 
-const LoginForm = ({ onLoginSuccess, onBackToLogin }) => {
+const LoginForm = ({ onLoginSuccess, onBackToLogin, onGuestLogin }) => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -342,6 +344,40 @@ const LoginForm = ({ onLoginSuccess, onBackToLogin }) => {
               ) : (
                 'Sign In'
               )}
+            </Button>
+          </Box>
+        </Fade>
+
+        {/* Guest Login Section */}
+        <Fade in={true} timeout={2200}>
+          <Box sx={{ mt: 3 }}>
+            <Divider sx={{ my: 2 }}>
+              <Typography variant="body2" color="text.secondary">
+                OR
+              </Typography>
+            </Divider>
+            
+            <Button
+              fullWidth
+              variant="outlined"
+              onClick={onGuestLogin}
+              startIcon={<Person />}
+              sx={{
+                height: 48,
+                fontSize: '1rem',
+                fontWeight: 500,
+                borderColor: '#2e7d32',
+                color: '#2e7d32',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  borderColor: '#1b5e20',
+                  backgroundColor: 'rgba(46, 125, 50, 0.04)',
+                  transform: 'translateY(-2px)',
+                  boxShadow: '0 4px 12px rgba(46, 125, 50, 0.2)',
+                },
+              }}
+            >
+              Continue as Guest
             </Button>
           </Box>
         </Fade>

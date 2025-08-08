@@ -55,9 +55,16 @@ const theme = createTheme({
 
 function App() {
   const [currentView, setCurrentView] = useState('login'); // 'login', 'registration', 'dashboard'
+  const [isGuestMode, setIsGuestMode] = useState(false);
 
   const handleLoginSuccess = () => {
     setCurrentView('dashboard');
+    setIsGuestMode(false);
+  };
+
+  const handleGuestLogin = () => {
+    setCurrentView('dashboard');
+    setIsGuestMode(true);
   };
 
   const handleRegistrationSuccess = () => {
@@ -74,6 +81,7 @@ function App() {
 
   const handleLogout = () => {
     setCurrentView('login');
+    setIsGuestMode(false);
   };
 
   const renderCurrentView = () => {
@@ -83,6 +91,7 @@ function App() {
           <LoginForm 
             onLoginSuccess={handleLoginSuccess}
             onBackToLogin={handleShowRegistration}
+            onGuestLogin={handleGuestLogin}
           />
         );
       case 'registration':
@@ -93,12 +102,13 @@ function App() {
           />
         );
       case 'dashboard':
-        return <Dashboard onLogout={handleLogout} />;
+        return <Dashboard onLogout={handleLogout} isGuestMode={isGuestMode} />;
       default:
         return (
           <LoginForm 
             onLoginSuccess={handleLoginSuccess}
             onBackToLogin={handleShowRegistration}
+            onGuestLogin={handleGuestLogin}
           />
         );
     }
