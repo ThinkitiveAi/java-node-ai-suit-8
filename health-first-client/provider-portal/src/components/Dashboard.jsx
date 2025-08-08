@@ -12,7 +12,10 @@ import {
   Fade,
   Slide,
   Chip,
-  Alert
+  Alert,
+  IconButton,
+  Avatar,
+  Badge
 } from '@mui/material';
 import { 
   LocalHospital, 
@@ -22,7 +25,10 @@ import {
   Logout,
   Dashboard as DashboardIcon,
   Add,
-  Person
+  Person,
+  Notifications,
+  Search,
+  Menu
 } from '@mui/icons-material';
 import ProvidersList from './ProvidersList';
 import AddProviderModal from './AddProviderModal';
@@ -52,45 +58,142 @@ const Dashboard = ({ onLogout, isGuestMode = false }) => {
     setShowAddModal(false);
   };
 
+  const handleViewProvider = (provider) => {
+    // Handle view provider action
+    console.log('View provider:', provider);
+  };
+
+  const handleEditProvider = (provider) => {
+    // Handle edit provider action
+    console.log('Edit provider:', provider);
+  };
+
+  const handleDeleteProvider = (provider) => {
+    // Handle delete provider action
+    setProviders(prev => prev.filter(p => p.id !== provider.id));
+  };
+
+  const statsCards = [
+    {
+      icon: <People sx={{ fontSize: 32, color: '#1976d2' }} />,
+      value: providers.length,
+      label: 'Active Providers',
+      color: '#1976d2',
+      gradient: 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)'
+    },
+    {
+      icon: <Schedule sx={{ fontSize: 32, color: '#2e7d32' }} />,
+      value: 23,
+      label: "Today's Appointments",
+      color: '#2e7d32',
+      gradient: 'linear-gradient(135deg, #2e7d32 0%, #4caf50 100%)'
+    },
+    {
+      icon: <Assignment sx={{ fontSize: 32, color: '#ed6c02' }} />,
+      value: 8,
+      label: 'Pending Reports',
+      color: '#ed6c02',
+      gradient: 'linear-gradient(135deg, #ed6c02 0%, #ff9800 100%)'
+    },
+    {
+      icon: <LocalHospital sx={{ fontSize: 32, color: '#d32f2f' }} />,
+      value: 12,
+      label: 'Emergency Cases',
+      color: '#d32f2f',
+      gradient: 'linear-gradient(135deg, #d32f2f 0%, #f44336 100%)'
+    }
+  ];
+
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static" sx={{ background: 'linear-gradient(45deg, #2e7d32, #4caf50)' }}>
-        <Toolbar>
-          <LocalHospital sx={{ mr: 2 }} />
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Provider Portal
-            {isGuestMode && (
-              <Chip 
-                label="Guest Mode" 
-                size="small" 
-                sx={{ 
-                  ml: 2, 
-                  backgroundColor: 'rgba(255,255,255,0.2)', 
-                  color: 'white',
-                  fontSize: '0.75rem'
-                }} 
-              />
-            )}
-          </Typography>
-          <Button color="inherit" startIcon={<DashboardIcon />}>
-            Dashboard
-          </Button>
-          <Button color="inherit" startIcon={<People />}>
-            Patients
-          </Button>
-          <Button color="inherit" onClick={onLogout} startIcon={<Logout />}>
-            Logout
-          </Button>
+    <Box sx={{ flexGrow: 1, background: '#f8fafc', minHeight: '100vh' }}>
+      {/* Enhanced AppBar */}
+      <AppBar position="static" elevation={0}>
+        <Toolbar sx={{ px: { xs: 2, md: 4 } }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
+            <Avatar sx={{ 
+              bgcolor: 'rgba(255,255,255,0.2)', 
+              mr: 2,
+              width: 40,
+              height: 40
+            }}>
+              <LocalHospital />
+            </Avatar>
+            <Box>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: 'white' }}>
+                Provider Portal
+              </Typography>
+              {isGuestMode && (
+                <Chip 
+                  label="Guest Mode" 
+                  size="small" 
+                  sx={{ 
+                    mt: 0.5,
+                    backgroundColor: 'rgba(255,255,255,0.2)', 
+                    color: 'white',
+                    fontSize: '0.7rem',
+                    height: 20
+                  }} 
+                />
+              )}
+            </Box>
+          </Box>
+          
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <IconButton color="inherit" size="small">
+              <Search />
+            </IconButton>
+            <IconButton color="inherit" size="small">
+              <Badge badgeContent={3} color="error">
+                <Notifications />
+              </Badge>
+            </IconButton>
+            <Button 
+              color="inherit" 
+              startIcon={<DashboardIcon />}
+              sx={{ 
+                mx: 1,
+                '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' }
+              }}
+            >
+              Dashboard
+            </Button>
+            <Button 
+              color="inherit" 
+              startIcon={<People />}
+              sx={{ 
+                mx: 1,
+                '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' }
+              }}
+            >
+              Patients
+            </Button>
+            <Button 
+              color="inherit" 
+              onClick={onLogout} 
+              startIcon={<Logout />}
+              sx={{ 
+                mx: 1,
+                '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' }
+              }}
+            >
+              Logout
+            </Button>
+          </Box>
         </Toolbar>
       </AppBar>
       
-      <Container maxWidth="lg" sx={{ mt: 4 }}>
+      {/* Main Content */}
+      <Container maxWidth="xl" sx={{ py: 4, px: { xs: 2, md: 4 } }}>
         {/* Success Alert */}
         {showSuccessAlert && (
           <Fade in={true} timeout={500}>
             <Alert 
               severity="success" 
-              sx={{ mb: 3, borderRadius: 2 }}
+              sx={{ 
+                mb: 4, 
+                borderRadius: 3,
+                boxShadow: '0 4px 20px rgba(76, 175, 80, 0.3)'
+              }}
               onClose={() => setShowSuccessAlert(false)}
             >
               Provider added successfully!
@@ -100,185 +203,146 @@ const Dashboard = ({ onLogout, isGuestMode = false }) => {
 
         <Slide direction="up" in={true} timeout={800}>
           <Box>
+            {/* Header Section */}
             <Fade in={true} timeout={1000}>
-              <Typography variant="h3" component="h1" gutterBottom sx={{ 
-                fontWeight: 700,
-                background: 'linear-gradient(45deg, #2e7d32, #4caf50)',
-                backgroundClip: 'text',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent'
-              }}>
-                Healthcare Provider Dashboard
-              </Typography>
-            </Fade>
-            
-            <Fade in={true} timeout={1200}>
-              <Typography variant="h6" color="text.secondary" paragraph>
-                Manage patients, appointments, and medical records
-              </Typography>
-            </Fade>
-            
-            <Grid container spacing={3} sx={{ mt: 4 }}>
-              <Grid item xs={12} sm={6} md={3}>
-                <Fade in={true} timeout={1400}>
-                  <Card sx={{ 
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      transform: 'translateY(-8px)',
-                      boxShadow: '0 8px 25px rgba(46, 125, 50, 0.2)',
-                    }
-                  }}>
-                    <CardContent>
-                      <People sx={{ fontSize: 40, color: 'primary.main', mb: 2 }} />
-                      <Typography variant="h4" component="div">
-                        {providers.length}
-                      </Typography>
-                      <Typography color="text.secondary">
-                        Active Providers
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Fade>
-              </Grid>
-              
-              <Grid item xs={12} sm={6} md={3}>
-                <Fade in={true} timeout={1600}>
-                  <Card sx={{ 
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      transform: 'translateY(-8px)',
-                      boxShadow: '0 8px 25px rgba(46, 125, 50, 0.2)',
-                    }
-                  }}>
-                    <CardContent>
-                      <Schedule sx={{ fontSize: 40, color: 'primary.main', mb: 2 }} />
-                      <Typography variant="h4" component="div">
-                        23
-                      </Typography>
-                      <Typography color="text.secondary">
-                        Today's Appointments
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Fade>
-              </Grid>
-              
-              <Grid item xs={12} sm={6} md={3}>
-                <Fade in={true} timeout={1800}>
-                  <Card sx={{ 
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      transform: 'translateY(-8px)',
-                      boxShadow: '0 8px 25px rgba(46, 125, 50, 0.2)',
-                    }
-                  }}>
-                    <CardContent>
-                      <Assignment sx={{ fontSize: 40, color: 'primary.main', mb: 2 }} />
-                      <Typography variant="h4" component="div">
-                        8
-                      </Typography>
-                      <Typography color="text.secondary">
-                        Pending Reports
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Fade>
-              </Grid>
-              
-              <Grid item xs={12} sm={6} md={3}>
-                <Fade in={true} timeout={2000}>
-                  <Card sx={{ 
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      transform: 'translateY(-8px)',
-                      boxShadow: '0 8px 25px rgba(46, 125, 50, 0.2)',
-                    }
-                  }}>
-                    <CardContent>
-                      <LocalHospital sx={{ fontSize: 40, color: 'primary.main', mb: 2 }} />
-                      <Typography variant="h4" component="div">
-                        12
-                      </Typography>
-                      <Typography color="text.secondary">
-                        Emergency Cases
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Fade>
-              </Grid>
-            </Grid>
-            
-            <Fade in={true} timeout={2200}>
-              <Box sx={{ mt: 4, display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-                <Button 
-                  variant="contained" 
-                  startIcon={<Add />}
-                  onClick={handleOpenAddModal}
-                  sx={{
-                    background: 'linear-gradient(45deg, #2e7d32, #4caf50)',
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      transform: 'translateY(-2px)',
-                      boxShadow: '0 6px 20px rgba(46, 125, 50, 0.4)',
-                    }
-                  }}
-                >
-                  Add Clinician
-                </Button>
-                <Button 
-                  variant="outlined" 
-                  startIcon={<People />}
-                  sx={{
-                    borderColor: '#2e7d32',
-                    color: '#2e7d32',
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      borderColor: '#1b5e20',
-                      backgroundColor: 'rgba(46, 125, 50, 0.04)',
-                      transform: 'translateY(-2px)',
-                    }
-                  }}
-                >
-                  View Patients
-                </Button>
-                <Button 
-                  variant="outlined" 
-                  startIcon={<Schedule />}
-                  sx={{
-                    borderColor: '#2e7d32',
-                    color: '#2e7d32',
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      borderColor: '#1b5e20',
-                      backgroundColor: 'rgba(46, 125, 50, 0.04)',
-                      transform: 'translateY(-2px)',
-                    }
-                  }}
-                >
-                  Manage Appointments
-                </Button>
-                <Button 
-                  variant="outlined" 
-                  startIcon={<Assignment />}
-                  sx={{
-                    borderColor: '#2e7d32',
-                    color: '#2e7d32',
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      borderColor: '#1b5e20',
-                      backgroundColor: 'rgba(46, 125, 50, 0.04)',
-                      transform: 'translateY(-2px)',
-                    }
-                  }}
-                >
-                  Medical Records
-                </Button>
+              <Box sx={{ mb: 4 }}>
+                <Typography variant="h3" component="h1" gutterBottom sx={{ 
+                  fontWeight: 700,
+                  background: 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)',
+                  backgroundClip: 'text',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  mb: 1
+                }}>
+                  Healthcare Provider Dashboard
+                </Typography>
+                <Typography variant="h6" color="text.secondary" sx={{ mb: 3 }}>
+                  Manage patients, appointments, and medical records
+                </Typography>
+                
+                {/* Action Buttons */}
+                <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 4 }}>
+                  <Button 
+                    variant="contained" 
+                    startIcon={<Add />}
+                    onClick={handleOpenAddModal}
+                    sx={{
+                      px: 3,
+                      py: 1.5,
+                      fontSize: '0.9rem',
+                      fontWeight: 600,
+                      boxShadow: '0 4px 20px rgba(25, 118, 210, 0.3)',
+                      '&:hover': {
+                        transform: 'translateY(-2px)',
+                        boxShadow: '0 8px 30px rgba(25, 118, 210, 0.4)',
+                      }
+                    }}
+                  >
+                    Add Clinician
+                  </Button>
+                  <Button 
+                    variant="outlined" 
+                    startIcon={<People />}
+                    sx={{
+                      px: 3,
+                      py: 1.5,
+                      fontSize: '0.9rem',
+                      fontWeight: 600,
+                      borderColor: '#1976d2',
+                      color: '#1976d2',
+                      '&:hover': {
+                        borderColor: '#1565c0',
+                        backgroundColor: 'rgba(25, 118, 210, 0.04)',
+                        transform: 'translateY(-2px)',
+                      }
+                    }}
+                  >
+                    View Patients
+                  </Button>
+                  <Button 
+                    variant="outlined" 
+                    startIcon={<Schedule />}
+                    sx={{
+                      px: 3,
+                      py: 1.5,
+                      fontSize: '0.9rem',
+                      fontWeight: 600,
+                      borderColor: '#1976d2',
+                      color: '#1976d2',
+                      '&:hover': {
+                        borderColor: '#1565c0',
+                        backgroundColor: 'rgba(25, 118, 210, 0.04)',
+                        transform: 'translateY(-2px)',
+                      }
+                    }}
+                  >
+                    Manage Appointments
+                  </Button>
+                  <Button 
+                    variant="outlined" 
+                    startIcon={<Assignment />}
+                    sx={{
+                      px: 3,
+                      py: 1.5,
+                      fontSize: '0.9rem',
+                      fontWeight: 600,
+                      borderColor: '#1976d2',
+                      color: '#1976d2',
+                      '&:hover': {
+                        borderColor: '#1565c0',
+                        backgroundColor: 'rgba(25, 118, 210, 0.04)',
+                        transform: 'translateY(-2px)',
+                      }
+                    }}
+                  >
+                    Medical Records
+                  </Button>
+                </Box>
               </Box>
             </Fade>
+            
+            {/* Stats Cards */}
+            <Grid container spacing={3} sx={{ mb: 6 }}>
+              {statsCards.map((card, index) => (
+                <Grid item xs={12} sm={6} md={3} key={index}>
+                  <Fade in={true} timeout={1400 + index * 200}>
+                    <Card sx={{ 
+                      height: '100%',
+                      background: card.gradient,
+                      color: 'white',
+                      transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                      '&:hover': {
+                        transform: 'translateY(-8px) scale(1.02)',
+                        boxShadow: `0 20px 40px ${card.color}40`,
+                      }
+                    }}>
+                      <CardContent sx={{ p: 3 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                          {card.icon}
+                          <Box sx={{ ml: 'auto' }}>
+                            <Typography variant="h4" component="div" sx={{ fontWeight: 700 }}>
+                              {card.value}
+                            </Typography>
+                          </Box>
+                        </Box>
+                        <Typography variant="body1" sx={{ fontWeight: 500, opacity: 0.9 }}>
+                          {card.label}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </Fade>
+                </Grid>
+              ))}
+            </Grid>
 
             {/* Providers List */}
-            <Box sx={{ mt: 6 }}>
-              <ProvidersList providers={providers} />
+            <Box>
+              <ProvidersList 
+                providers={providers} 
+                onViewProvider={handleViewProvider}
+                onEditProvider={handleEditProvider}
+                onDeleteProvider={handleDeleteProvider}
+              />
             </Box>
           </Box>
         </Slide>

@@ -323,12 +323,12 @@ const LoginForm = ({ onLoginSuccess, onBackToLogin, onGuestLogin }) => {
                 height: 56,
                 fontSize: '1.1rem',
                 fontWeight: 600,
-                background: 'linear-gradient(45deg, #2e7d32, #4caf50)',
-                boxShadow: '0 4px 12px rgba(46, 125, 50, 0.3)',
+                background: 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)',
+                boxShadow: '0 4px 12px rgba(25, 118, 210, 0.3)',
                 transition: 'all 0.3s ease',
                 '&:hover': {
-                  background: 'linear-gradient(45deg, #1b5e20, #2e7d32)',
-                  boxShadow: '0 6px 20px rgba(46, 125, 50, 0.4)',
+                  background: 'linear-gradient(135deg, #1565c0 0%, #1976d2 100%)',
+                  boxShadow: '0 6px 20px rgba(25, 118, 210, 0.4)',
                   transform: 'translateY(-2px)',
                 },
                 '&:disabled': {
@@ -366,14 +366,14 @@ const LoginForm = ({ onLoginSuccess, onBackToLogin, onGuestLogin }) => {
                 height: 48,
                 fontSize: '1rem',
                 fontWeight: 500,
-                borderColor: '#2e7d32',
-                color: '#2e7d32',
+                borderColor: '#1976d2',
+                color: '#1976d2',
                 transition: 'all 0.3s ease',
                 '&:hover': {
-                  borderColor: '#1b5e20',
-                  backgroundColor: 'rgba(46, 125, 50, 0.04)',
+                  borderColor: '#1565c0',
+                  backgroundColor: 'rgba(25, 118, 210, 0.04)',
                   transform: 'translateY(-2px)',
-                  boxShadow: '0 4px 12px rgba(46, 125, 50, 0.2)',
+                  boxShadow: '0 4px 12px rgba(25, 118, 210, 0.2)',
                 },
               }}
             >

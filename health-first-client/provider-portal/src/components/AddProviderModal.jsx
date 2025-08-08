@@ -21,7 +21,9 @@ import {
   Stepper,
   Step,
   StepLabel,
-  IconButton
+  IconButton,
+  Divider,
+  Chip
 } from '@mui/material';
 import {
   Close,
@@ -32,11 +34,16 @@ import {
   LocationOn,
   School,
   Work,
-  Home
+  Home,
+  Lock,
+  Visibility,
+  VisibilityOff,
+  Security,
+  CheckCircle
 } from '@mui/icons-material';
 import { specializations } from '../utils/providersData';
 
-const steps = ['Personal Information', 'Professional Details', 'Clinic Address'];
+const steps = ['Personal Information', 'Professional Details', 'Clinic Address', 'Security Setup'];
 
 const AddProviderModal = ({ open, onClose, onAddProvider }) => {
   const [activeStep, setActiveStep] = useState(0);
@@ -56,11 +63,17 @@ const AddProviderModal = ({ open, onClose, onAddProvider }) => {
     streetAddress: '',
     city: '',
     state: '',
-    zipCode: ''
+    zipCode: '',
+
+    // Security
+    password: '',
+    confirmPassword: ''
   });
   
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Validation functions
   const validateEmail = (email) => {
@@ -81,6 +94,14 @@ const AddProviderModal = ({ open, onClose, onAddProvider }) => {
   const validateZipCode = (zip) => {
     const zipRegex = /^\d{5}(-\d{4})?$/;
     return zipRegex.test(zip);
+  };
+
+  const validatePassword = (password) => {
+    return password.length >= 8 && 
+           /[A-Z]/.test(password) && 
+           /[a-z]/.test(password) && 
+           /[0-9]/.test(password) &&
+           /[!@#$%^&*]/.test(password);
   };
 
   const validateField = (name, value) => {
@@ -132,6 +153,18 @@ const AddProviderModal = ({ open, onClose, onAddProvider }) => {
         if (!value) return 'ZIP code is required';
         if (!validateZipCode(value)) return 'Please enter a valid ZIP code';
         return '';
+
+      case 'password':
+        if (!value) return 'Password is required';
+        if (!validatePassword(value)) {
+          return 'Password must be at least 8 characters with uppercase, lowercase, number, and special character';
+        }
+        return '';
+
+      case 'confirmPassword':
+        if (!value) return 'Please confirm your password';
+        if (value !== formData.password) return 'Passwords do not match';
+        return '';
       
       default:
         return '';
@@ -174,6 +207,13 @@ const AddProviderModal = ({ open, onClose, onAddProvider }) => {
       
       case 2: // Clinic Address
         ['streetAddress', 'city', 'state', 'zipCode'].forEach(field => {
+          const error = validateField(field, formData[field]);
+          if (error) newErrors[field] = error;
+        });
+        break;
+
+      case 3: // Security Setup
+        ['password', 'confirmPassword'].forEach(field => {
           const error = validateField(field, formData[field]);
           if (error) newErrors[field] = error;
         });
@@ -225,9 +265,13 @@ const AddProviderModal = ({ open, onClose, onAddProvider }) => {
       streetAddress: '',
       city: '',
       state: '',
-      zipCode: ''
+      zipCode: '',
+      password: '',
+      confirmPassword: ''
     });
     setErrors({});
+    setShowPassword(false);
+    setShowConfirmPassword(false);
     onClose();
   };
 
@@ -443,6 +487,94 @@ const AddProviderModal = ({ open, onClose, onAddProvider }) => {
           </Fade>
         );
 
+      case 3:
+        return (
+          <Fade in={true} timeout={500}>
+            <Box>
+              <Box sx={{ mb: 3, p: 2, bgcolor: 'primary.50', borderRadius: 2, border: '1px solid', borderColor: 'primary.200' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                  <Security color="primary" />
+                  <Typography variant="h6" color="primary" sx={{ fontWeight: 600 }}>
+                    Security Setup
+                  </Typography>
+                </Box>
+                <Typography variant="body2" color="text.secondary">
+                  Set up login credentials for the new provider. They will use these credentials to access the portal.
+                </Typography>
+              </Box>
+              
+              <Grid container spacing={3}>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Password"
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    error={!!errors.password}
+                    helperText={errors.password}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Lock color="action" />
+                        </InputAdornment>
+                      ),
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => setShowPassword(!showPassword)}
+                            edge="end"
+                            sx={{ color: 'action.active' }}
+                          >
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Confirm Password"
+                    name="confirmPassword"
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    value={formData.confirmPassword}
+                    onChange={handleInputChange}
+                    error={!!errors.confirmPassword}
+                    helperText={errors.confirmPassword}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Lock color="action" />
+                        </InputAdornment>
+                      ),
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            edge="end"
+                            sx={{ color: 'action.active' }}
+                          >
+                            {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Grid>
+              </Grid>
+
+              <Box sx={{ mt: 3, p: 2, bgcolor: 'success.50', borderRadius: 2, border: '1px solid', borderColor: 'success.200' }}>
+                <Typography variant="body2" color="success.main" sx={{ fontWeight: 500 }}>
+                  ✓ Password must contain at least 8 characters, including uppercase, lowercase, number, and special character
+                </Typography>
+              </Box>
+            </Box>
+          </Fade>
+        );
+
       default:
         return null;
     }
@@ -456,21 +588,31 @@ const AddProviderModal = ({ open, onClose, onAddProvider }) => {
       fullWidth
       PaperProps={{
         sx: {
-          borderRadius: 3,
-          overflow: 'hidden'
+          borderRadius: 4,
+          overflow: 'hidden',
+          boxShadow: '0 20px 60px rgba(0,0,0,0.2)'
         }
       }}
     >
       <DialogTitle sx={{ 
-        background: 'linear-gradient(45deg, #2e7d32, #4caf50)',
+        background: 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)',
         color: 'white',
         display: 'flex',
         justifyContent: 'space-between',
-        alignItems: 'center'
+        alignItems: 'center',
+        py: 3
       }}>
-        <Typography variant="h6" sx={{ fontWeight: 600 }}>
-          Add New Provider
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Security sx={{ fontSize: 28 }} />
+          <Box>
+            <Typography variant="h5" sx={{ fontWeight: 600 }}>
+              Add New Provider
+            </Typography>
+            <Typography variant="body2" sx={{ opacity: 0.9, mt: 0.5 }}>
+              Create a new healthcare provider account
+            </Typography>
+          </Box>
+        </Box>
         <IconButton onClick={handleClose} sx={{ color: 'white' }}>
           <Close />
         </IconButton>
@@ -494,11 +636,11 @@ const AddProviderModal = ({ open, onClose, onAddProvider }) => {
           onClick={handleBack}
           variant="outlined"
           sx={{
-            borderColor: '#2e7d32',
-            color: '#2e7d32',
+            borderColor: '#1976d2',
+            color: '#1976d2',
             '&:hover': {
-              borderColor: '#1b5e20',
-              backgroundColor: 'rgba(46, 125, 50, 0.04)',
+              borderColor: '#1565c0',
+              backgroundColor: 'rgba(25, 118, 210, 0.04)',
             }
           }}
         >
@@ -512,23 +654,28 @@ const AddProviderModal = ({ open, onClose, onAddProvider }) => {
             onClick={handleSubmit}
             variant="contained"
             disabled={isLoading}
+            startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : <CheckCircle />}
             sx={{
-              background: 'linear-gradient(45deg, #2e7d32, #4caf50)',
+              background: 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)',
+              px: 4,
+              py: 1.5,
               '&:hover': {
-                background: 'linear-gradient(45deg, #1b5e20, #2e7d32)',
+                background: 'linear-gradient(135deg, #1565c0 0%, #1976d2 100%)',
               }
             }}
           >
-            {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Add Provider'}
+            {isLoading ? 'Creating Account...' : 'Create Provider Account'}
           </Button>
         ) : (
           <Button
             onClick={handleNext}
             variant="contained"
             sx={{
-              background: 'linear-gradient(45deg, #2e7d32, #4caf50)',
+              background: 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)',
+              px: 4,
+              py: 1.5,
               '&:hover': {
-                background: 'linear-gradient(45deg, #1b5e20, #2e7d32)',
+                background: 'linear-gradient(135deg, #1565c0 0%, #1976d2 100%)',
               }
             }}
           >

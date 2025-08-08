@@ -14,18 +14,31 @@ import {
   Slide,
   IconButton,
   Tooltip,
-  Avatar
+  Avatar,
+  Button,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText
 } from '@mui/material';
 import {
   Email,
   Phone,
   LocationOn,
   Person,
-  LocalHospital
+  LocalHospital,
+  MoreVert,
+  Edit,
+  Delete,
+  Visibility,
+  Security,
+  AccountCircle
 } from '@mui/icons-material';
 
-const ProvidersList = ({ providers }) => {
+const ProvidersList = ({ providers, onEditProvider, onDeleteProvider, onViewProvider }) => {
   const [hoveredRow, setHoveredRow] = useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedProvider, setSelectedProvider] = useState(null);
 
   const getInitials = (firstName, lastName) => {
     return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
@@ -52,11 +65,38 @@ const ProvidersList = ({ providers }) => {
     return colors[specialization] || '#607d8b';
   };
 
+  const handleMenuOpen = (event, provider) => {
+    setAnchorEl(event.currentTarget);
+    setSelectedProvider(provider);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setSelectedProvider(null);
+  };
+
+  const handleAction = (action) => {
+    if (selectedProvider) {
+      switch (action) {
+        case 'view':
+          onViewProvider?.(selectedProvider);
+          break;
+        case 'edit':
+          onEditProvider?.(selectedProvider);
+          break;
+        case 'delete':
+          onDeleteProvider?.(selectedProvider);
+          break;
+      }
+    }
+    handleMenuClose();
+  };
+
   return (
     <Fade in={true} timeout={800}>
       <Box>
         <Slide direction="up" in={true} timeout={600}>
-          <Box sx={{ mb: 3 }}>
+          <Box sx={{ mb: 4 }}>
             <Typography variant="h4" component="h2" gutterBottom sx={{ 
               fontWeight: 600,
               color: 'primary.main',
@@ -75,36 +115,37 @@ const ProvidersList = ({ providers }) => {
 
         <Slide direction="up" in={true} timeout={800}>
           <Paper 
-            elevation={2} 
+            elevation={0} 
             sx={{ 
-              borderRadius: 3,
+              borderRadius: 4,
               overflow: 'hidden',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+              border: '1px solid rgba(0, 0, 0, 0.08)',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
               transition: 'all 0.3s ease',
               '&:hover': {
-                boxShadow: '0 8px 30px rgba(0,0,0,0.15)',
+                boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
               }
             }}
           >
             <TableContainer>
               <Table>
                 <TableHead>
-                  <TableRow sx={{ backgroundColor: 'primary.main' }}>
-                    <TableCell sx={{ color: 'white', fontWeight: 600, fontSize: '1rem' }}>
-                      Provider
-                    </TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 600, fontSize: '1rem' }}>
-                      Specialization
-                    </TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 600, fontSize: '1rem' }}>
-                      Contact
-                    </TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 600, fontSize: '1rem' }}>
-                      License
-                    </TableCell>
-                    <TableCell sx={{ color: 'white', fontWeight: 600, fontSize: '1rem' }}>
-                      Location
-                    </TableCell>
+                  <TableRow sx={{ 
+                    background: 'linear-gradient(135deg, #1976d2 0%, #42a5f5 100%)',
+                    '& th': {
+                      color: 'white',
+                      fontWeight: 600,
+                      fontSize: '0.875rem',
+                      borderBottom: 'none',
+                      py: 2
+                    }
+                  }}>
+                    <TableCell>Provider</TableCell>
+                    <TableCell>Specialization</TableCell>
+                    <TableCell>Contact</TableCell>
+                    <TableCell>License</TableCell>
+                    <TableCell>Location</TableCell>
+                    <TableCell align="center">Actions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -114,17 +155,20 @@ const ProvidersList = ({ providers }) => {
                         sx={{
                           transition: 'all 0.3s ease',
                           cursor: 'pointer',
-                          backgroundColor: hoveredRow === provider.id ? 'rgba(46, 125, 50, 0.04)' : 'transparent',
+                          backgroundColor: hoveredRow === provider.id ? 'rgba(25, 118, 210, 0.04)' : 'transparent',
                           '&:hover': {
-                            backgroundColor: 'rgba(46, 125, 50, 0.08)',
-                            transform: 'translateY(-2px)',
-                            boxShadow: '0 4px 12px rgba(46, 125, 50, 0.15)',
+                            backgroundColor: 'rgba(25, 118, 210, 0.08)',
+                            transform: 'translateY(-1px)',
+                            boxShadow: '0 4px 12px rgba(25, 118, 210, 0.15)',
                           },
+                          '&:last-child td': {
+                            borderBottom: 0
+                          }
                         }}
                         onMouseEnter={() => setHoveredRow(provider.id)}
                         onMouseLeave={() => setHoveredRow(null)}
                       >
-                        <TableCell>
+                        <TableCell sx={{ py: 2 }}>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                             <Avatar 
                               sx={{ 
@@ -132,13 +176,14 @@ const ProvidersList = ({ providers }) => {
                                 width: 48,
                                 height: 48,
                                 fontSize: '1.2rem',
-                                fontWeight: 600
+                                fontWeight: 600,
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
                               }}
                             >
                               {getInitials(provider.firstName, provider.lastName)}
                             </Avatar>
                             <Box>
-                              <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                              <Typography variant="subtitle1" sx={{ fontWeight: 600, color: 'text.primary' }}>
                                 {provider.firstName} {provider.lastName}
                               </Typography>
                               <Typography variant="body2" color="text.secondary">
@@ -155,7 +200,8 @@ const ProvidersList = ({ providers }) => {
                               backgroundColor: getSpecializationColor(provider.specialization),
                               color: 'white',
                               fontWeight: 600,
-                              fontSize: '0.875rem',
+                              fontSize: '0.75rem',
+                              height: 24,
                               '&:hover': {
                                 opacity: 0.9,
                               }
@@ -164,16 +210,16 @@ const ProvidersList = ({ providers }) => {
                         </TableCell>
                         
                         <TableCell>
-                          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                              <Email sx={{ fontSize: 16, color: 'action.active' }} />
-                              <Typography variant="body2" sx={{ fontSize: '0.875rem' }}>
+                              <Email sx={{ fontSize: 14, color: 'action.active' }} />
+                              <Typography variant="body2" sx={{ fontSize: '0.8rem' }}>
                                 {provider.email}
                               </Typography>
                             </Box>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                              <Phone sx={{ fontSize: 16, color: 'action.active' }} />
-                              <Typography variant="body2" sx={{ fontSize: '0.875rem' }}>
+                              <Phone sx={{ fontSize: 14, color: 'action.active' }} />
+                              <Typography variant="body2" sx={{ fontSize: '0.8rem' }}>
                                 {provider.phone}
                               </Typography>
                             </Box>
@@ -185,7 +231,7 @@ const ProvidersList = ({ providers }) => {
                             fontWeight: 600,
                             color: 'primary.main',
                             fontFamily: 'monospace',
-                            fontSize: '0.875rem'
+                            fontSize: '0.8rem'
                           }}>
                             {provider.licenseNumber}
                           </Typography>
@@ -193,10 +239,62 @@ const ProvidersList = ({ providers }) => {
                         
                         <TableCell>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <LocationOn sx={{ fontSize: 16, color: 'action.active' }} />
-                            <Typography variant="body2" sx={{ fontSize: '0.875rem' }}>
+                            <LocationOn sx={{ fontSize: 14, color: 'action.active' }} />
+                            <Typography variant="body2" sx={{ fontSize: '0.8rem' }}>
                               {provider.city}, {provider.state}
                             </Typography>
+                          </Box>
+                        </TableCell>
+
+                        <TableCell align="center">
+                          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
+                            <Tooltip title="View Details">
+                              <IconButton
+                                size="small"
+                                onClick={() => onViewProvider?.(provider)}
+                                sx={{
+                                  color: 'primary.main',
+                                  '&:hover': {
+                                    backgroundColor: 'rgba(25, 118, 210, 0.1)',
+                                    transform: 'scale(1.1)',
+                                  }
+                                }}
+                              >
+                                <Visibility fontSize="small" />
+                              </IconButton>
+                            </Tooltip>
+                            
+                            <Tooltip title="Edit Provider">
+                              <IconButton
+                                size="small"
+                                onClick={() => onEditProvider?.(provider)}
+                                sx={{
+                                  color: 'warning.main',
+                                  '&:hover': {
+                                    backgroundColor: 'rgba(255, 152, 0, 0.1)',
+                                    transform: 'scale(1.1)',
+                                  }
+                                }}
+                              >
+                                <Edit fontSize="small" />
+                              </IconButton>
+                            </Tooltip>
+
+                            <Tooltip title="More Actions">
+                              <IconButton
+                                size="small"
+                                onClick={(e) => handleMenuOpen(e, provider)}
+                                sx={{
+                                  color: 'text.secondary',
+                                  '&:hover': {
+                                    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                                    transform: 'scale(1.1)',
+                                  }
+                                }}
+                              >
+                                <MoreVert fontSize="small" />
+                              </IconButton>
+                            </Tooltip>
                           </Box>
                         </TableCell>
                       </TableRow>
@@ -207,6 +305,40 @@ const ProvidersList = ({ providers }) => {
             </TableContainer>
           </Paper>
         </Slide>
+
+        {/* Action Menu */}
+        <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleMenuClose}
+          PaperProps={{
+            sx: {
+              borderRadius: 2,
+              boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+              border: '1px solid rgba(0,0,0,0.08)',
+              minWidth: 180
+            }
+          }}
+        >
+          <MenuItem onClick={() => handleAction('view')}>
+            <ListItemIcon>
+              <Visibility fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>View Details</ListItemText>
+          </MenuItem>
+          <MenuItem onClick={() => handleAction('edit')}>
+            <ListItemIcon>
+              <Edit fontSize="small" />
+            </ListItemIcon>
+            <ListItemText>Edit Provider</ListItemText>
+          </MenuItem>
+          <MenuItem onClick={() => handleAction('delete')} sx={{ color: 'error.main' }}>
+            <ListItemIcon>
+              <Delete fontSize="small" sx={{ color: 'error.main' }} />
+            </ListItemIcon>
+            <ListItemText>Delete Provider</ListItemText>
+          </MenuItem>
+        </Menu>
       </Box>
     </Fade>
   );
