@@ -3,32 +3,20 @@ import {
   Container, 
   Typography, 
   Box, 
-  AppBar, 
-  Toolbar, 
-  Button, 
   Grid, 
   Card, 
   CardContent,
   Fade,
   Slide,
-  Chip,
   Alert,
-  IconButton,
-  Avatar,
-  Badge
+  Button
 } from '@mui/material';
 import { 
   LocalHospital, 
   People, 
   Schedule, 
   Assignment,
-  Logout,
-  Dashboard as DashboardIcon,
-  Add,
-  Person,
-  Notifications,
-  Search,
-  Menu
+  Add
 } from '@mui/icons-material';
 import ProvidersList from './ProvidersList';
 import AddProviderModal from './AddProviderModal';
@@ -106,82 +94,6 @@ const Dashboard = ({ onLogout, isGuestMode = false }) => {
 
   return (
     <Box sx={{ flexGrow: 1, background: '#f8fafc', minHeight: '100vh' }}>
-      {/* Enhanced AppBar */}
-      <AppBar position="static" elevation={0}>
-        <Toolbar sx={{ px: { xs: 2, md: 4 } }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
-            <Avatar sx={{ 
-              bgcolor: 'rgba(255,255,255,0.2)', 
-              mr: 2,
-              width: 40,
-              height: 40
-            }}>
-              <LocalHospital />
-            </Avatar>
-            <Box>
-              <Typography variant="h6" sx={{ fontWeight: 600, color: 'white' }}>
-                Provider Portal
-              </Typography>
-              {isGuestMode && (
-                <Chip 
-                  label="Guest Mode" 
-                  size="small" 
-                  sx={{ 
-                    mt: 0.5,
-                    backgroundColor: 'rgba(255,255,255,0.2)', 
-                    color: 'white',
-                    fontSize: '0.7rem',
-                    height: 20
-                  }} 
-                />
-              )}
-            </Box>
-          </Box>
-          
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <IconButton color="inherit" size="small">
-              <Search />
-            </IconButton>
-            <IconButton color="inherit" size="small">
-              <Badge badgeContent={3} color="error">
-                <Notifications />
-              </Badge>
-            </IconButton>
-            <Button 
-              color="inherit" 
-              startIcon={<DashboardIcon />}
-              sx={{ 
-                mx: 1,
-                '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' }
-              }}
-            >
-              Dashboard
-            </Button>
-            <Button 
-              color="inherit" 
-              startIcon={<People />}
-              sx={{ 
-                mx: 1,
-                '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' }
-              }}
-            >
-              Patients
-            </Button>
-            <Button 
-              color="inherit" 
-              onClick={onLogout} 
-              startIcon={<Logout />}
-              sx={{ 
-                mx: 1,
-                '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)' }
-              }}
-            >
-              Logout
-            </Button>
-          </Box>
-        </Toolbar>
-      </AppBar>
-      
       {/* Main Content */}
       <Container maxWidth="xl" sx={{ py: 4, px: { xs: 2, md: 4 } }}>
         {/* Success Alert */}

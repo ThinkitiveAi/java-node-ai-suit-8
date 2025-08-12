@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline, Container, Box } from '@mui/material';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import LoginForm from './components/LoginForm';
 import RegistrationForm from './components/RegistrationForm';
-import Dashboard from './components/Dashboard';
+import MainLayout from './components/MainLayout';
 
 const theme = createTheme({
   palette: {
@@ -119,16 +120,17 @@ const theme = createTheme({
 });
 
 function App() {
-  const [currentView, setCurrentView] = useState('login'); // 'login', 'registration', 'dashboard'
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isGuestMode, setIsGuestMode] = useState(false);
+  const [currentView, setCurrentView] = useState('login');
 
   const handleLoginSuccess = () => {
-    setCurrentView('dashboard');
+    setIsAuthenticated(true);
     setIsGuestMode(false);
   };
 
   const handleGuestLogin = () => {
-    setCurrentView('dashboard');
+    setIsAuthenticated(true);
     setIsGuestMode(true);
   };
 
@@ -145,11 +147,12 @@ function App() {
   };
 
   const handleLogout = () => {
-    setCurrentView('login');
+    setIsAuthenticated(false);
     setIsGuestMode(false);
+    setCurrentView('login');
   };
 
-  const renderCurrentView = () => {
+  const renderAuthContent = () => {
     switch (currentView) {
       case 'login':
         return (
@@ -166,8 +169,6 @@ function App() {
             onBackToLogin={handleBackToLogin}
           />
         );
-      case 'dashboard':
-        return <Dashboard onLogout={handleLogout} isGuestMode={isGuestMode} />;
       default:
         return (
           <LoginForm 
@@ -184,17 +185,21 @@ function App() {
       <CssBaseline />
       <Box sx={{ 
         minHeight: '100vh', 
-        background: currentView === 'dashboard' 
+        background: isAuthenticated 
           ? '#f8fafc' 
           : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         display: 'flex',
-        alignItems: currentView === 'dashboard' ? 'flex-start' : 'center',
+        alignItems: isAuthenticated ? 'flex-start' : 'center',
         justifyContent: 'center',
-        padding: currentView === 'dashboard' ? 0 : 2
+        padding: isAuthenticated ? 0 : 2
       }}>
-        <Container maxWidth={currentView === 'dashboard' ? false : 'sm'}>
-          {renderCurrentView()}
-        </Container>
+        {isAuthenticated ? (
+          <MainLayout onLogout={handleLogout} isGuestMode={isGuestMode} />
+        ) : (
+          <Container maxWidth="sm">
+            {renderAuthContent()}
+          </Container>
+        )}
       </Box>
     </ThemeProvider>
   );
